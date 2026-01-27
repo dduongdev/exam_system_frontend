@@ -44,6 +44,48 @@ export default function ExamPage() {
         return () => window.removeEventListener('beforeunload', handleBeforeUnload);
     }, []);
 
+    // Anti-cheating measures
+    useEffect(() => {
+        const handleContextMenu = (e) => e.preventDefault();
+        const handleCopy = (e) => e.preventDefault();
+        const handleKeyDown = (e) => {
+            // Block F12
+            if (e.key === 'F12') {
+                e.preventDefault();
+                return;
+            }
+            // Block Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C (DevTools)
+            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+                e.preventDefault();
+                return;
+            }
+            // Block Ctrl+U (View Source)
+            if (e.ctrlKey && e.key === 'u') {
+                e.preventDefault();
+                return;
+            }
+        };
+
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                // User returned to tab
+                alert('CẢNH BÁO: Phát hiện bạn vừa rời khỏi màn hình thi. Hành vi này đã được hệ thống ghi lại và gửi tới giám thị!');
+            }
+        };
+
+        window.addEventListener('contextmenu', handleContextMenu);
+        window.addEventListener('copy', handleCopy);
+        window.addEventListener('keydown', handleKeyDown);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            window.removeEventListener('contextmenu', handleContextMenu);
+            window.removeEventListener('copy', handleCopy);
+            window.removeEventListener('keydown', handleKeyDown);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, []);
+
     if (!examSnapshot) return null;
 
     // Combine all questions for navigation

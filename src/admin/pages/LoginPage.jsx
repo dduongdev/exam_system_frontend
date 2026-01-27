@@ -85,10 +85,6 @@ export default function AdminLoginPage() {
                     </div>
                 </div>
 
-                {/* Default credentials hint (remove in production) */}
-                <div className="mt-4 text-center text-xs text-gray-500">
-                    <p>Mặc định: admin / Admin@123</p>
-                </div>
             </div>
         </div>
     );

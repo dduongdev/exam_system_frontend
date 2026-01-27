@@ -39,5 +39,14 @@ export const adminAuthService = {
     async getProfile() {
         const response = await adminApi.get('/auth/profile');
         return response.data;
+    },
+
+    // Change password
+    async changePassword(oldPassword, newPassword) {
+        const response = await adminApi.post('/auth/change-password', {
+            oldPassword,
+            newPassword
+        });
+        return response.data;
     }
 };

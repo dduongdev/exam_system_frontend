@@ -9,6 +9,7 @@ export default function Sidebar() {
         { path: '/admin/exam-matrices', label: 'Ma trận đề', icon: '📋' },
         { path: '/admin/exam-sessions', label: 'Ca thi', icon: '🕐' },
         { path: '/admin/reports', label: 'Báo cáo', icon: '📈' },
+        { path: '/admin/profile', label: 'Tài khoản', icon: '👤' },
     ];
 
     return (

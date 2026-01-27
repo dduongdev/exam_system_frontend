@@ -27,8 +27,12 @@ export default function QuestionNavigator() {
             return answers.mcq_answers.some(a => a.question_id === question.question_id);
         } else {
             const groupAnswer = answers.group_answers.find(a => a.question_id === question.question_id);
-            // Consider group answered if all 4 sub-questions have answers
-            return groupAnswer?.sub_answers?.length === 4;
+            if (!groupAnswer) return false;
+
+            const totalRequired = question.sub_questions?.length || 0;
+            const answeredCount = groupAnswer.sub_answers?.filter(s => s.selected !== undefined).length || 0;
+
+            return totalRequired > 0 && answeredCount === totalRequired;
         }
     };
 

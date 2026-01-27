@@ -305,6 +305,15 @@ export default function QuestionPoolsPage() {
                             <li>Sheet 2 (Group): Cột A-J (Nội dung, Mức độ, Ý a, Đ/S, Ý b, Đ/S...)</li>
                             <li>Dòng 1 là header, dữ liệu bắt đầu từ dòng 2.</li>
                         </ul>
+                        <div className="mt-3 pt-3 border-t border-blue-100">
+                            <a
+                                href="/mau_nhap_cau_hoi.xlsx"
+                                download
+                                className="text-sm text-primary-700 font-bold hover:underline flex items-center gap-1"
+                            >
+                                📥 Tải file mẫu nhập câu hỏi (.xlsx)
+                            </a>
+                        </div>
                     </div>
 
                     <div>

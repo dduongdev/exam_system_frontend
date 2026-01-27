@@ -127,11 +127,22 @@ export function ExamProvider({ children }) {
 
     // Get answered question count
     const getAnsweredCount = () => {
+        if (!examSnapshot) return 0;
+
         const mcqCount = answers.mcq_answers.length;
-        const groupCount = answers.group_answers.reduce((sum, g) => {
-            return sum + (g.sub_answers.filter(s => s.selected !== undefined).length / 4);
-        }, 0);
-        return Math.floor(mcqCount + groupCount);
+
+        // Count group questions that are COMPLETELY answered
+        const groupCount = examSnapshot.part2_group?.reduce((count, question) => {
+            const groupAnswer = answers.group_answers.find(a => a.question_id === question.question_id);
+            if (!groupAnswer) return count;
+
+            const totalSubs = question.sub_questions?.length || 0;
+            const answeredSubs = groupAnswer.sub_answers?.filter(s => s.selected !== undefined).length || 0;
+
+            return count + (totalSubs > 0 && answeredSubs === totalSubs ? 1 : 0);
+        }, 0) || 0;
+
+        return mcqCount + groupCount;
     };
 
     // Clear exam data (after submission)

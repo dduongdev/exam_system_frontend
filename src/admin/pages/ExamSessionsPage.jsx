@@ -166,11 +166,25 @@ export default function ExamSessionsPage() {
         try {
             setImportStatus('Đang upload...');
             const result = await examSessionService.importStudents(selectedSession.id, importFile);
-            setImportStatus(`Thành công! Đã import ${result.count || 0} sinh viên.`);
+
+            let statusMsg = '';
+            if (result.successCount > 0) {
+                statusMsg = `Thành công! Đã thêm ${result.successCount} sinh viên mới.`;
+            } else if (result.total > 0) {
+                statusMsg = `Hoàn thành! Không có sinh viên mới nào được thêm.`;
+            } else {
+                statusMsg = `Hoàn thành! File không chứa dữ liệu hợp lệ.`;
+            }
+
+            if (result.duplicateCount > 0 || result.errorCount > 0) {
+                statusMsg += ` (${result.duplicateCount} trùng, ${result.errorCount} lỗi)`;
+            }
+
+            setImportStatus(statusMsg);
             setTimeout(() => {
                 setIsImportModalOpen(false);
                 loadData();
-            }, 2000);
+            }, 3000);
         } catch (error) {
             setImportStatus('Lỗi: ' + (error.response?.data?.message || error.message));
         }
@@ -371,6 +385,15 @@ export default function ExamSessionsPage() {
                             <li>Cột 4: Lớp (Tùy chọn)</li>
                             <li>Ví dụ: <span className="italic">SV001 | Nguyễn Văn A | 01/01/2005 | 12A1</span></li>
                         </ul>
+                        <div className="mt-3 pt-3 border-t border-blue-100">
+                            <a
+                                href="/mau_nhap_thi_sinh.xlsx"
+                                download
+                                className="text-sm text-primary-700 font-bold hover:underline flex items-center gap-1"
+                            >
+                                📥 Tải file mẫu nhập thí sinh (.xlsx)
+                            </a>
+                        </div>
                     </div>
 
                     <div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Input from '../../../components/common/Input';
 import Button from '../../../components/common/Button';
 
@@ -12,22 +12,25 @@ export default function MCQForm({ initialData, onSubmit, onCancel }) {
             { id: crypto.randomUUID(), text: '', label: 'C' },
             { id: crypto.randomUUID(), text: '', label: 'D' },
         ],
-        correct_option_id: ''
+        correctLabel: ''
     });
 
     // Initialize data for editing
-    useState(() => {
+    useEffect(() => {
         if (initialData) {
+            const mcqData = initialData.data;
+            const correctOpt = mcqData?.options?.find(opt => opt.id === mcqData.correct_option_id);
+
             setFormData({
                 content: initialData.content,
                 cognitiveLevel: initialData.cognitiveLevel,
-                options: initialData.data?.options || [
+                options: mcqData?.options?.map(opt => ({ ...opt })) || [
                     { id: crypto.randomUUID(), text: '', label: 'A' },
                     { id: crypto.randomUUID(), text: '', label: 'B' },
                     { id: crypto.randomUUID(), text: '', label: 'C' },
                     { id: crypto.randomUUID(), text: '', label: 'D' },
                 ],
-                correct_option_id: initialData.data?.correct_option_id || ''
+                correctLabel: correctOpt?.label || ''
             });
         }
     }, [initialData]);
@@ -46,8 +49,8 @@ export default function MCQForm({ initialData, onSubmit, onCancel }) {
             content: formData.content,
             cognitiveLevel: parseInt(formData.cognitiveLevel),
             data: {
-                options: formData.options,
-                correct_option_id: formData.correct_option_id
+                options: formData.options.map(({ id, ...rest }) => rest), // Send only text and label
+                correctLabel: formData.correctLabel
             }
         };
 
@@ -95,8 +98,8 @@ export default function MCQForm({ initialData, onSubmit, onCancel }) {
                         <input
                             type="radio"
                             name="correct_option"
-                            checked={formData.correct_option_id === option.id}
-                            onChange={() => setFormData({ ...formData, correct_option_id: option.id })}
+                            checked={formData.correctLabel === option.label}
+                            onChange={() => setFormData({ ...formData, correctLabel: option.label })}
                             required
                             className="w-4 h-4 text-primary-800 focus:ring-primary-800"
                         />

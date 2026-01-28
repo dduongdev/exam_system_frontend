@@ -74,8 +74,17 @@ export default function ReportsPage() {
                         >
                             <div>
                                 <h3 className="font-semibold text-gray-900">{session.name}</h3>
+                                {session.matrix?.subject ? (
+                                    <p className="text-xs font-medium text-primary-700 mt-0.5">
+                                        📚 {session.matrix.subject.name}
+                                    </p>
+                                ) : (
+                                    <p className="text-xs font-medium text-gray-400 mt-0.5 italic">
+                                        (Môn học: N/A)
+                                    </p>
+                                )}
                                 <p className="text-sm text-gray-600 mt-1">
-                                    {session.startTime && new Date(session.startTime).toLocaleDateString('vi-VN')}
+                                    📅 {session.startTime && new Date(session.startTime).toLocaleDateString('vi-VN')}
                                 </p>
                             </div>
 

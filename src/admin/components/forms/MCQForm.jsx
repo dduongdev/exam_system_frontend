@@ -3,7 +3,7 @@ import Input from '../../../components/common/Input';
 import Button from '../../../components/common/Button';
 
 export default function MCQForm({ initialData, onSubmit, onCancel }) {
-    const [formData, setFormData] = useState(initialData || {
+    const [formData, setFormData] = useState({
         content: '',
         cognitiveLevel: 1,
         options: [
@@ -14,6 +14,23 @@ export default function MCQForm({ initialData, onSubmit, onCancel }) {
         ],
         correct_option_id: ''
     });
+
+    // Initialize data for editing
+    useState(() => {
+        if (initialData) {
+            setFormData({
+                content: initialData.content,
+                cognitiveLevel: initialData.cognitiveLevel,
+                options: initialData.data?.options || [
+                    { id: crypto.randomUUID(), text: '', label: 'A' },
+                    { id: crypto.randomUUID(), text: '', label: 'B' },
+                    { id: crypto.randomUUID(), text: '', label: 'C' },
+                    { id: crypto.randomUUID(), text: '', label: 'D' },
+                ],
+                correct_option_id: initialData.data?.correct_option_id || ''
+            });
+        }
+    }, [initialData]);
 
     const handleOptionChange = (index, value) => {
         const newOptions = [...formData.options];
@@ -102,7 +119,7 @@ export default function MCQForm({ initialData, onSubmit, onCancel }) {
                     Hủy
                 </Button>
                 <Button type="submit">
-                    Lưu câu hỏi
+                    {initialData ? 'Cập nhật câu hỏi' : 'Lưu câu hỏi'}
                 </Button>
             </div>
         </form>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Button from '../../../components/common/Button';
 
 export default function GroupQuestionForm({ initialData, onSubmit, onCancel }) {
-    const [formData, setFormData] = useState(initialData || {
+    const [formData, setFormData] = useState({
         content: '',
         cognitiveLevel: 2,
         sub_questions: [
@@ -12,6 +12,17 @@ export default function GroupQuestionForm({ initialData, onSubmit, onCancel }) {
             { id: crypto.randomUUID(), text: '', label: 'd', is_correct: false },
         ]
     });
+
+    // Initialize data for editing
+    useState(() => {
+        if (initialData) {
+            setFormData({
+                content: initialData.content,
+                cognitiveLevel: initialData.cognitiveLevel,
+                sub_questions: initialData.data?.sub_questions || []
+            });
+        }
+    }, [initialData]);
 
     const handleSubQuestionChange = (index, field, value) => {
         const newSubs = [...formData.sub_questions];
@@ -117,7 +128,7 @@ export default function GroupQuestionForm({ initialData, onSubmit, onCancel }) {
                     Hủy
                 </Button>
                 <Button type="submit">
-                    Lưu câu hỏi
+                    {initialData ? 'Cập nhật câu hỏi' : 'Lưu câu hỏi'}
                 </Button>
             </div>
         </form>

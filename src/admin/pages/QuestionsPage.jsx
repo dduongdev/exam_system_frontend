@@ -91,8 +91,17 @@ export default function QuestionsPage() {
         loadQuestions(newPage);
     };
 
+    const [editingQuestion, setEditingQuestion] = useState(null);
+
     const handleCreate = (type) => {
         setQuestionType(type);
+        setEditingQuestion(null);
+        setIsModalOpen(true);
+    };
+
+    const handleEdit = (question) => {
+        setQuestionType(question.questionType);
+        setEditingQuestion(question);
         setIsModalOpen(true);
     };
 
@@ -111,12 +120,18 @@ export default function QuestionsPage() {
         setError('');
 
         try {
-            await questionService.create({
-                ...data,
-                poolId: filterPool
-            });
+            if (editingQuestion) {
+                await questionService.update(editingQuestion.id, data);
+            } else {
+                await questionService.create({
+                    ...data,
+                    poolId: filterPool
+                });
+            }
             setIsModalOpen(false);
+            setEditingQuestion(null);
             await loadQuestions();
+            alert(editingQuestion ? 'Cập nhật câu hỏi thành công' : 'Thêm câu hỏi thành công');
         } catch (error) {
             setError(error.response?.data?.message || 'Có lỗi xảy ra');
         }
@@ -151,8 +166,8 @@ export default function QuestionsPage() {
             header: 'Mức độ',
             render: (row) => (
                 <span className={`px-2 py-0.5 text-xs font-medium rounded ${row.cognitiveLevel === 1 ? 'bg-green-50 text-green-700' :
-                        row.cognitiveLevel === 2 ? 'bg-orange-50 text-orange-700' :
-                            'bg-red-50 text-red-700'
+                    row.cognitiveLevel === 2 ? 'bg-orange-50 text-orange-700' :
+                        'bg-red-50 text-red-700'
                     }`}>
                     {getCognitiveLevelText(row.cognitiveLevel)}
                 </span>
@@ -238,12 +253,20 @@ export default function QuestionsPage() {
                                 data={questions}
                                 emptyMessage="Chưa có câu hỏi nào. Hãy tạo câu hỏi mới!"
                                 actions={(row) => (
-                                    <button
-                                        onClick={() => handleDelete(row)}
-                                        className="text-red-600 hover:text-red-700 font-medium"
-                                    >
-                                        Xóa
-                                    </button>
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={() => handleEdit(row)}
+                                            className="text-blue-600 hover:text-blue-800 font-medium"
+                                        >
+                                            Sửa
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(row)}
+                                            className="text-red-600 hover:text-red-700 font-medium"
+                                        >
+                                            Xóa
+                                        </button>
+                                    </div>
                                 )}
                             />
                         )}
@@ -270,8 +293,8 @@ export default function QuestionsPage() {
                                             key={i + 1}
                                             onClick={() => handlePageChange(i + 1)}
                                             className={`w-8 h-8 rounded text-sm font-medium transition-colors ${page === i + 1
-                                                    ? 'bg-primary-600 text-white'
-                                                    : 'text-gray-600 hover:bg-gray-100'
+                                                ? 'bg-primary-600 text-white'
+                                                : 'text-gray-600 hover:bg-gray-100'
                                                 }`}
                                         >
                                             {i + 1}
@@ -295,9 +318,12 @@ export default function QuestionsPage() {
             {/* Modal */}
             <Modal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                title={`Tạo câu hỏi ${questionType === 'MCQ' ? 'trắc nghiệm' : 'Đúng/Sai'}`}
+                title={editingQuestion ? 'Chỉnh sửa câu hỏi' : `Tạo câu hỏi ${questionType === 'MCQ' ? 'trắc nghiệm' : 'Đúng/Sai'}`}
                 size="lg"
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setEditingQuestion(null);
+                }}
             >
                 {error && (
                     <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
@@ -307,13 +333,21 @@ export default function QuestionsPage() {
 
                 {questionType === 'MCQ' ? (
                     <MCQForm
+                        initialData={editingQuestion}
                         onSubmit={handleSubmit}
-                        onCancel={() => setIsModalOpen(false)}
+                        onCancel={() => {
+                            setIsModalOpen(false);
+                            setEditingQuestion(null);
+                        }}
                     />
                 ) : (
                     <GroupQuestionForm
+                        initialData={editingQuestion}
                         onSubmit={handleSubmit}
-                        onCancel={() => setIsModalOpen(false)}
+                        onCancel={() => {
+                            setIsModalOpen(false);
+                            setEditingQuestion(null);
+                        }}
                     />
                 )}
             </Modal>

@@ -194,13 +194,13 @@ export default function ExamSessionsPage() {
         const styles = {
             DRAFT: 'bg-gray-100 text-gray-800',
             ACTIVE: 'bg-success-100 text-success-800',
-            COMPLETED: 'bg-blue-100 text-blue-800',
+            FINISHED: 'bg-blue-100 text-blue-800',
             CANCELLED: 'bg-red-100 text-red-800'
         };
         const labels = {
             DRAFT: 'Nháp',
             ACTIVE: 'Đang mở',
-            COMPLETED: 'Đã kết thúc',
+            FINISHED: 'Đã kết thúc',
             CANCELLED: 'Đã hủy'
         };
         return (
@@ -208,6 +208,18 @@ export default function ExamSessionsPage() {
                 {labels[status] || status}
             </span>
         );
+    };
+
+    const handlePublish = async (session) => {
+        if (!confirm(`Bạn có chắc muốn kích hoạt ca thi "${session.name}"? Sau khi kích hoạt, một số thông tin quan trọng sẽ không thể chỉnh sửa.`)) return;
+
+        try {
+            await examSessionService.update(session.id, { status: 'ACTIVE' });
+            await loadData();
+            alert('Kích hoạt ca thi thành công');
+        } catch (error) {
+            alert('Không thể kích hoạt: ' + (error.response?.data?.message || error.message));
+        }
     };
 
     const columns = [
@@ -259,25 +271,36 @@ export default function ExamSessionsPage() {
                                 >
                                     Chi tiết
                                 </button>
-                                <button
-                                    onClick={() => handleImportStudents(row)}
-                                    className="text-green-600 hover:text-green-800 font-medium mr-3"
-                                    title="Import danh sách sinh viên"
-                                >
-                                    Import SV
-                                </button>
-                                <button
-                                    onClick={() => handleEdit(row)}
-                                    className="text-blue-600 hover:text-blue-800 font-medium mr-3"
-                                >
-                                    Sửa
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(row)}
-                                    className="text-red-600 hover:text-red-800 font-medium"
-                                >
-                                    Xóa
-                                </button>
+                                {row.status === 'DRAFT' && (
+                                    <>
+                                        <button
+                                            onClick={() => handlePublish(row)}
+                                            className="text-success-600 hover:text-success-800 font-medium mr-3"
+                                            title="Kích hoạt ca thi"
+                                        >
+                                            Kích hoạt
+                                        </button>
+                                        <button
+                                            onClick={() => handleImportStudents(row)}
+                                            className="text-green-600 hover:text-green-800 font-medium mr-3"
+                                            title="Import danh sách sinh viên"
+                                        >
+                                            Import SV
+                                        </button>
+                                        <button
+                                            onClick={() => handleEdit(row)}
+                                            className="text-blue-600 hover:text-blue-800 font-medium mr-3"
+                                        >
+                                            Sửa
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(row)}
+                                            className="text-red-600 hover:text-red-800 font-medium"
+                                        >
+                                            Xóa
+                                        </button>
+                                    </>
+                                )}
                             </>
                         )}
                     />
@@ -342,15 +365,13 @@ export default function ExamSessionsPage() {
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Trạng thái
                         </label>
-                        <select
-                            value={formData.status}
-                            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-800"
-                        >
-                            <option value="DRAFT">Nháp</option>
-                            <option value="ACTIVE">Đang mở</option>
-                            <option value="COMPLETED">Đã kết thúc</option>
-                        </select>
+                        <div className="px-3 py-2 border border-gray-300 rounded bg-gray-50 text-gray-600">
+                            {formData.status === 'DRAFT' ? 'Nháp (DRAFT)' :
+                                formData.status === 'ACTIVE' ? 'Đang mở (ACTIVE)' : 'Đã kết thúc (FINISHED)'}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1 italic">
+                            * Ca thi mới tạo mặc định là Nháp. Sử dụng nút "Kích hoạt" ngoài danh sách để triển khai.
+                        </p>
                     </div>
 
                     {error && (

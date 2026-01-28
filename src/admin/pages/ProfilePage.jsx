@@ -3,6 +3,11 @@ import { adminAuthService } from '../services/adminAuthService';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 
+const ROLE_MAP = {
+    'ADMIN': 'Quản trị viên',
+    'LECTURER': 'Giảng viên'
+};
+
 export default function ProfilePage() {
     const user = adminAuthService.getCurrentUser();
     const [oldPassword, setOldPassword] = useState('');
@@ -65,7 +70,7 @@ export default function ProfilePage() {
                             <label className="block text-sm font-medium text-gray-500">Vai trò</label>
                             <p className="mt-1">
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    {user?.role}
+                                    {ROLE_MAP[user?.role] || user?.role}
                                 </span>
                             </p>
                         </div>

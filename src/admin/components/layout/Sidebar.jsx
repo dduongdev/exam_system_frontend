@@ -5,7 +5,7 @@ export default function Sidebar() {
     const { user } = useAdminAuth();
 
     const menuItems = [
-        { path: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
+        { path: '/admin/dashboard', label: 'Tổng quan', icon: '📊' },
         { path: '/admin/subjects', label: 'Môn học', icon: '📚' },
         { path: '/admin/question-pools', label: 'Gói câu hỏi', icon: '📦' },
         { path: '/admin/questions', label: 'Câu hỏi', icon: '❓' },
@@ -25,7 +25,7 @@ export default function Sidebar() {
             {/* Logo */}
             <div className="h-16 flex items-center px-6 border-b border-gray-200">
                 <h1 className="text-lg font-semibold text-primary-800">
-                    Exam Admin
+                    Quản trị kỳ thi
                 </h1>
             </div>
 

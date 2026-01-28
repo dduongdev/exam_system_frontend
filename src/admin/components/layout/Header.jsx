@@ -2,6 +2,11 @@ import { useAdminAuth } from '../../context/AdminAuthContext';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../../components/common/Button';
 
+const ROLE_MAP = {
+    'ADMIN': 'Quản trị viên',
+    'LECTURER': 'Giảng viên'
+};
+
 export default function Header() {
     const { user, logout } = useAdminAuth();
     const navigate = useNavigate();
@@ -21,7 +26,7 @@ export default function Header() {
 
             <div className="flex items-center gap-4">
                 <span className="text-xs text-gray-500 px-2 py-1 bg-gray-100 rounded">
-                    {user?.role}
+                    {ROLE_MAP[user?.role] || user?.role}
                 </span>
                 <Button variant="outline" size="sm" onClick={handleLogout}>
                     Đăng xuất

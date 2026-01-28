@@ -43,7 +43,7 @@ export default function Dashboard() {
         <div className="space-y-6">
             {/* Page Title */}
             <div>
-                <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
+                <h1 className="text-2xl font-semibold text-gray-900">Tổng quan</h1>
                 <p className="text-sm text-gray-600 mt-1">
                     Tổng quan hệ thống thi trực tuyến
                 </p>

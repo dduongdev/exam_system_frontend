@@ -193,7 +193,9 @@ export default function ExamSessionDetailPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div>
                         <p className="text-sm text-gray-500">Ma trận đề</p>
-                        <p className="font-medium">{session.matrix?.name || 'Chưa chọn'}</p>
+                        <p className="font-medium">
+                            {session.matrix?.name ? `${session.matrix.name} [${session.matrix.subject?.name || 'N/A'}]` : 'Chưa chọn'}
+                        </p>
                     </div>
                     <div>
                         <p className="text-sm text-gray-500">Thời gian bắt đầu</p>

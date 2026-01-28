@@ -226,7 +226,11 @@ export default function ExamSessionsPage() {
         { header: 'Tên ca thi', accessor: 'name' },
         {
             header: 'Ma trận',
-            render: (row) => matrices.find(m => m.id === row.matrixId)?.name || '-'
+            render: (row) => {
+                const matrix = matrices.find(m => m.id === row.matrixId);
+                if (!matrix) return '-';
+                return `${matrix.name} [${matrix.subject?.name || 'N/A'}]`;
+            }
         },
         {
             header: 'Thời gian',
@@ -334,7 +338,9 @@ export default function ExamSessionsPage() {
                         >
                             <option value="">-- Chọn ma trận --</option>
                             {matrices.map(m => (
-                                <option key={m.id} value={m.id}>{m.name}</option>
+                                <option key={m.id} value={m.id}>
+                                    {m.name} [{m.subject?.name || 'N/A'}]
+                                </option>
                             ))}
                         </select>
                     </div>

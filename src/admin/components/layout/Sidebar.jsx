@@ -1,6 +1,9 @@
 import { NavLink } from 'react-router-dom';
+import { useAdminAuth } from '../../context/AdminAuthContext';
 
 export default function Sidebar() {
+    const { user } = useAdminAuth();
+
     const menuItems = [
         { path: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
         { path: '/admin/subjects', label: 'Môn học', icon: '📚' },
@@ -9,8 +12,13 @@ export default function Sidebar() {
         { path: '/admin/exam-matrices', label: 'Ma trận đề', icon: '📋' },
         { path: '/admin/exam-sessions', label: 'Ca thi', icon: '🕐' },
         { path: '/admin/reports', label: 'Báo cáo', icon: '📈' },
+        { path: '/admin/lecturers', label: 'Quản lý Giảng viên', icon: '👨‍🏫', roles: ['ADMIN'] },
         { path: '/admin/profile', label: 'Tài khoản', icon: '👤' },
     ];
+
+    const filteredItems = menuItems.filter(item =>
+        !item.roles || item.roles.includes(user?.role)
+    );
 
     return (
         <aside className="w-64 bg-white border-r border-gray-200 flex-shrink-0">
@@ -23,7 +31,7 @@ export default function Sidebar() {
 
             {/* Navigation */}
             <nav className="p-4 space-y-1">
-                {menuItems.map((item) => (
+                {filteredItems.map((item) => (
                     <NavLink
                         key={item.path}
                         to={item.path}

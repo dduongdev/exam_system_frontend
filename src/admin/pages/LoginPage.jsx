@@ -5,7 +5,7 @@ import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 
 export default function AdminLoginPage() {
-    const [username, setUsername] = useState('');
+    const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -19,10 +19,10 @@ export default function AdminLoginPage() {
         setLoading(true);
 
         try {
-            await login(username, password);
+            await login(identifier, password);
             navigate('/admin/dashboard');
         } catch (err) {
-            setError(err.response?.data?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại tên đăng nhập và mật khẩu.');
+            setError(err.response?.data?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.');
         } finally {
             setLoading(false);
         }
@@ -47,11 +47,11 @@ export default function AdminLoginPage() {
                     <div className="px-8 py-6">
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <Input
-                                label="Tên đăng nhập"
+                                label="Tên đăng nhập / Email / SĐT"
                                 type="text"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                placeholder="Nhập tên đăng nhập"
+                                value={identifier}
+                                onChange={(e) => setIdentifier(e.target.value)}
+                                placeholder="Nhập tên đăng nhập, email hoặc số điện thoại"
                                 required
                                 autoFocus
                             />

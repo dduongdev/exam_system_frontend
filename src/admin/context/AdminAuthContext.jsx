@@ -16,8 +16,8 @@ export const AdminAuthProvider = ({ children }) => {
         setLoading(false);
     }, []);
 
-    const login = async (username, password) => {
-        const { user } = await adminAuthService.login(username, password);
+    const login = async (identifier, password) => {
+        const { user } = await adminAuthService.login(identifier, password);
         setUser(user);
         return user;
     };
@@ -27,10 +27,16 @@ export const AdminAuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const updateUser = (updatedUser) => {
+        setUser(updatedUser);
+        adminAuthService.updateCurrentUser(updatedUser);
+    };
+
     const value = {
         user,
         login,
         logout,
+        updateUser,
         isAuthenticated: !!user,
         loading
     };

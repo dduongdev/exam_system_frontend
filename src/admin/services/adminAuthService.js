@@ -1,9 +1,9 @@
 import adminApi from './adminApi';
 
 export const adminAuthService = {
-    // Login
-    async login(username, password) {
-        const response = await adminApi.post('/auth/login', { username, password });
+    // Login với identifier (username/email/phone)
+    async login(identifier, password) {
+        const response = await adminApi.post('/auth/login', { identifier, password });
         const { access_token, user } = response.data;
 
         // Store token and user info
@@ -25,6 +25,11 @@ export const adminAuthService = {
         return userStr ? JSON.parse(userStr) : null;
     },
 
+    // Update current user in localStorage
+    updateCurrentUser(user) {
+        localStorage.setItem('admin_user', JSON.stringify(user));
+    },
+
     // Get token
     getToken() {
         return localStorage.getItem('admin_token');
@@ -41,10 +46,18 @@ export const adminAuthService = {
         return response.data;
     },
 
-    // Change password
+    // Change password (requires old password)
     async changePassword(oldPassword, newPassword) {
         const response = await adminApi.post('/auth/change-password', {
             oldPassword,
+            newPassword
+        });
+        return response.data;
+    },
+
+    // Force change password (first login, no old password required)
+    async forceChangePassword(newPassword) {
+        const response = await adminApi.post('/auth/force-change-password', {
             newPassword
         });
         return response.data;

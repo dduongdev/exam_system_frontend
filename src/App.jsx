@@ -18,6 +18,7 @@ import ExamMatricesPage from './admin/pages/ExamMatricesPage';
 import ExamSessionsPage from './admin/pages/ExamSessionsPage';
 import ExamSessionDetailPage from './admin/pages/ExamSessionDetailPage';
 import ReportsPage from './admin/pages/ReportsPage';
+import LecturersPage from './admin/pages/LecturersPage';
 import ProfilePage from './admin/pages/ProfilePage';
 import AdminLayout from './admin/components/layout/AdminLayout';
 import { ProtectedRoute } from './admin/components/ProtectedRoute';
@@ -64,6 +65,7 @@ function App() {
                     <Route path="exam-sessions" element={<ExamSessionsPage />} />
                     <Route path="exam-sessions/:id" element={<ExamSessionDetailPage />} />
                     <Route path="reports" element={<ReportsPage />} />
+                    <Route path="lecturers" element={<LecturersPage />} />
                     <Route path="profile" element={<ProfilePage />} />
                     <Route index element={<Navigate to="dashboard" replace />} />
                   </Route>

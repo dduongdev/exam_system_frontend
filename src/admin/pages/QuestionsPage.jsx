@@ -20,6 +20,8 @@ export default function QuestionsPage() {
     const [questionType, setQuestionType] = useState('MCQ');
     const [filterSubject, setFilterSubject] = useState(searchParams.get('subjectId') || '');
     const [filterPool, setFilterPool] = useState(searchParams.get('poolId') || '');
+    const [filterType, setFilterType] = useState('');
+    const [filterLevel, setFilterLevel] = useState('');
     const [error, setError] = useState('');
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
@@ -66,12 +68,20 @@ export default function QuestionsPage() {
         }
     };
 
+    useEffect(() => {
+        if (filterPool) {
+            loadQuestions(1);
+        }
+    }, [filterType, filterLevel]);
+
     const loadQuestions = async (pageNum = page) => {
         if (!filterPool) return;
 
         try {
             setLoading(true);
             const response = await questionService.getByPool(filterPool, {
+                questionType: filterType || null,
+                cognitiveLevel: filterLevel || null,
                 page: pageNum,
                 limit
             });
@@ -83,6 +93,28 @@ export default function QuestionsPage() {
             setError('Không thể tải danh sách câu hỏi');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleImport = async (e) => {
+        const file = e.target.files[0];
+        if (!file || !filterPool) return;
+
+        if (!confirm(`Bạn có muốn import câu hỏi từ file "${file.name}" vào gói câu hỏi hiện tại?`)) {
+            e.target.value = null;
+            return;
+        }
+
+        try {
+            setLoading(true);
+            await questionService.importQuestions(filterPool, file);
+            await loadQuestions(1);
+            alert('Import câu hỏi thành công!');
+        } catch (error) {
+            alert('Lỗi import: ' + (error.response?.data?.message || error.message));
+        } finally {
+            setLoading(false);
+            e.target.value = null;
         }
     };
 
@@ -194,7 +226,7 @@ export default function QuestionsPage() {
 
             {/* Filters */}
             <div className="bg-white rounded-md border border-gray-200 p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Môn học <span className="text-red-600">*</span>
@@ -226,18 +258,64 @@ export default function QuestionsPage() {
                             ))}
                         </select>
                     </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Loại câu hỏi
+                        </label>
+                        <select
+                            value={filterType}
+                            onChange={(e) => setFilterType(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-800"
+                        >
+                            <option value="">Tất cả</option>
+                            <option value="MCQ">MCQ (Trắc nghiệm)</option>
+                            <option value="GROUP">GROUP (Đúng/Sai)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Mức độ
+                        </label>
+                        <select
+                            value={filterLevel}
+                            onChange={(e) => setFilterLevel(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-800"
+                        >
+                            <option value="">Tất cả</option>
+                            <option value="1">Biết</option>
+                            <option value="2">Hiểu</option>
+                            <option value="3">Vận dụng</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             {/* Action Buttons */}
             {filterPool && (
-                <div className="flex gap-3">
-                    <Button onClick={() => handleCreate('MCQ')}>
-                        + Thêm câu trắc nghiệm
-                    </Button>
-                    <Button variant="outline" onClick={() => handleCreate('GROUP')}>
-                        + Thêm câu Đúng/Sai
-                    </Button>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex gap-2">
+                        <Button onClick={() => handleCreate('MCQ')}>
+                            + Thêm MCQ
+                        </Button>
+                        <Button variant="outline" onClick={() => handleCreate('GROUP')}>
+                            + Thêm Đúng/Sai
+                        </Button>
+                    </div>
+                    <div>
+                        <input
+                            type="file"
+                            id="import-questions"
+                            className="hidden"
+                            accept=".xlsx, .xls"
+                            onChange={handleImport}
+                        />
+                        <Button
+                            variant="secondary"
+                            onClick={() => document.getElementById('import-questions').click()}
+                        >
+                            📥 Import từ Excel
+                        </Button>
+                    </div>
                 </div>
             )}
 

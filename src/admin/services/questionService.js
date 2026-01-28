@@ -32,5 +32,22 @@ export const questionService = {
     // Delete question
     async delete(id) {
         await adminApi.delete(`/questions/${id}`);
+    },
+
+    // Import questions from Excel
+    async importQuestions(poolId, file) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await adminApi.post(
+            `/questions/import?poolId=${poolId}`,
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+        );
+        return response.data;
     }
 };
